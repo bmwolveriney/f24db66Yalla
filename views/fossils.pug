@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Fossils Search Results
+
+  // Outer container for the fossils
+  div.container-fluid
+    // Row for grid layout
+    div.row
+      // Loop through each fossil in the fossils array
+      each fossil in fossils
+        div.col-sm-4
+          h3 #{fossil.name}
+          p Age: #{fossil.age} million years
+          p Location: #{fossil.location}
