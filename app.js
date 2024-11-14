@@ -4,6 +4,47 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// Load environment variables from .env file
+require('dotenv').config();
+const mongoose = require('mongoose'); // Import mongoose
+const Fossil = require('./models/fossils'); // Correctly import the Fossil model
+
+// MongoDB connection setup
+const connectionString = process.env.MONGO_CON;
+mongoose.connect(connectionString)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
+
+// Check for successful connection or log error
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', function() {
+  console.log("Connection to DB succeeded");
+});
+
+// Function to recreate database (seeding)
+async function recreateDB() {
+  // Delete all documents in the Fossil collection
+  await Fossil.deleteMany();
+
+  // Create a few sample Fossil documents
+  let instance1 = new Fossil({ name: 'Trilobite', age: '500 million years', location: 'Utah' });
+  let instance2 = new Fossil({ name: 'Ammonite', age: '200 million years', location: 'Morocco' });
+  let instance3 = new Fossil({ name: 'Megalodon Tooth', age: '15 million years', location: 'California' });
+
+  // Save the instances
+  await instance1.save();
+  console.log('First object saved');
+  await instance2.save();
+  console.log('Second object saved');
+  await instance3.save();
+  console.log('Third object saved');
+}
+
+// Control reseeding
+let reseed = true;
+if (reseed) { recreateDB(); }
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var fossilsRouter = require('./routes/fossils');
