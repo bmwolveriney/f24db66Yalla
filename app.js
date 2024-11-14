@@ -4,10 +4,14 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-// Load environment variables from .env file
 require('dotenv').config();
-const mongoose = require('mongoose'); // Import mongoose
-const Fossil = require('./models/fossils'); // Correctly import the Fossil model
+const mongoose = require('mongoose');
+const Fossil = require('./models/fossils');  // Import the Fossil model
+
+// Routers
+var resourceRouter = require('./routes/resource');
+
+var app = express();
 
 // MongoDB connection setup
 const connectionString = process.env.MONGO_CON;
@@ -15,24 +19,20 @@ mongoose.connect(connectionString)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
 
-// Check for successful connection or log error
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', function() {
   console.log("Connection to DB succeeded");
 });
 
-// Function to recreate database (seeding)
+// Seed the database with initial data
 async function recreateDB() {
-  // Delete all documents in the Fossil collection
   await Fossil.deleteMany();
 
-  // Create a few sample Fossil documents
   let instance1 = new Fossil({ name: 'Trilobite', age: '500 million years', location: 'Utah' });
   let instance2 = new Fossil({ name: 'Ammonite', age: '200 million years', location: 'Morocco' });
   let instance3 = new Fossil({ name: 'Megalodon Tooth', age: '15 million years', location: 'California' });
 
-  // Save the instances
   await instance1.save();
   console.log('First object saved');
   await instance2.save();
@@ -41,46 +41,32 @@ async function recreateDB() {
   console.log('Third object saved');
 }
 
-// Control reseeding
 let reseed = true;
 if (reseed) { recreateDB(); }
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var fossilsRouter = require('./routes/fossils');
-var gridRouter = require('./routes/grid');  // Added the grid route
-var pickRouter = require('./routes/pick'); // Added the pick route for random item selection
-
-var app = express();
-
-// view engine setup
+// Set view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// Middleware
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/fossils', fossilsRouter);
-app.use('/grid', gridRouter); // Added the grid route
-app.use('/pick', pickRouter); // Added the randomitem route for the random item selection page
+// Use resource router
+app.use('/resource', resourceRouter);
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
