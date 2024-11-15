@@ -1,15 +1,10 @@
-extends layout
-
-block content
-  h1 Fossils Search Results
-
-  // Outer container for the fossils
-  div.container-fluid
-    // Row for grid layout
-    div.row
-      // Loop through each fossil in the fossils array
+doctype html
+html
+  head
+    title Fossils List
+  body
+    h1 Fossils List
+    ul
       each fossil in fossils
-        div.col-sm-4
-          h3 #{fossil.name}
-          p Age: #{fossil.age} million years
-          p Location: #{fossil.location}
+        li
+          a(href=`/resource/fossils/${fossil._id}`) #{fossil.name}

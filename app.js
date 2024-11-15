@@ -3,13 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
 require('dotenv').config();
 const mongoose = require('mongoose');
-const Fossil = require('./models/fossils');  // Import the Fossil model
+const Fossil = require('./models/fossils');
 
-// Routers
-var resourceRouter = require('./routes/resource');
+var resourceRouter = require('./routes/resource');  // Resource router
 
 var app = express();
 
@@ -25,14 +23,17 @@ db.once('open', function() {
   console.log("Connection to DB succeeded");
 });
 
-// Seed the database with initial data
+// Function to recreate database (seeding)
 async function recreateDB() {
+  // Delete all documents in the Fossil collection
   await Fossil.deleteMany();
 
+  // Create a few sample Fossil documents
   let instance1 = new Fossil({ name: 'Trilobite', age: '500 million years', location: 'Utah' });
   let instance2 = new Fossil({ name: 'Ammonite', age: '200 million years', location: 'Morocco' });
   let instance3 = new Fossil({ name: 'Megalodon Tooth', age: '15 million years', location: 'California' });
 
+  // Save the instances
   await instance1.save();
   console.log('First object saved');
   await instance2.save();
@@ -41,29 +42,30 @@ async function recreateDB() {
   console.log('Third object saved');
 }
 
+// Control reseeding
 let reseed = true;
 if (reseed) { recreateDB(); }
 
-// Set view engine
+// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// Middleware
+// Use the resource router
+app.use('/resource', resourceRouter);  // All API routes are prefixed with '/resource'
+
+// Set up logging and other middleware
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Use resource router
-app.use('/resource', resourceRouter);
-
-// Catch 404 and forward to error handler
+// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// Error handler
+// error handler
 app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

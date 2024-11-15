@@ -1,24 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const fossilController = require('../controllers/fossils');
-const apiController = require('../controllers/api');
+const fossilController = require('../controllers/fossils');  // Controller
 
-// API info endpoint
-router.get('/', apiController.api);
-
-// GET request for list of all fossils
+// Route to list all fossils
 router.get('/fossils', fossilController.fossil_list);
 
-// GET request for a specific fossil by ID
+// Route to view details of a single fossil
 router.get('/fossils/:id', fossilController.fossil_detail);
 
-// POST request to create a new fossil
+// Route to create a new fossil (POST)
 router.post('/fossils', fossilController.fossil_create_post);
-
-// PUT request to update an existing fossil by ID
-router.put('/fossils/:id', fossilController.fossil_update_put);
-
-// DELETE request to delete a fossil by ID
-router.delete('/fossils/:id', fossilController.fossil_delete);
 
 module.exports = router;
