@@ -1,5 +1,5 @@
 var createError = require('http-errors');
-var express = require('express');
+const express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -9,7 +9,8 @@ const Fossil = require('./models/fossils');
 
 var resourceRouter = require('./routes/resource');  // Resource router
 
-var app = express();
+const app = express();
+const fossilRoutes = require('./routes/fossils');
 
 // MongoDB connection setup
 const connectionString = process.env.MONGO_CON;
@@ -56,6 +57,7 @@ app.use('/resource', resourceRouter);  // All API routes are prefixed with '/res
 // Set up logging and other middleware
 app.use(logger('dev'));
 app.use(express.json());
+app.use('/resource/fossils', fossilRoutes);
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -72,5 +74,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 module.exports = app;
