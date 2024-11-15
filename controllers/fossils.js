@@ -33,14 +33,4 @@ exports.fossil_create_post = async function(req, res) {
       res.status(400).send("Error creating fossil.");
     }
   };
-  exports.fossil_create_post = async function(req, res) {
-    try {
-      const newFossil = new Fossil(req.body);  // Create a new instance from the request body
-      await newFossil.save();  // Save the fossil to the database
-      res.status(201).json(newFossil);  // Respond with the newly created fossil as JSON
-    } catch (err) {
-      console.error("Error in fossil_create_post:", err);  // Log the error details
-      res.status(500).send("Error creating fossil. " + err.message);  // Send a more detailed error response
-    }
-  };
     
