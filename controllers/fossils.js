@@ -57,15 +57,20 @@ exports.fossil_delete = async function(req, res) {
   }
 };
 
-// Handle Fossil update on PUT
-exports.fossil_update_put = async function(req, res) {
-  try {
-    const fossil = await Fossil.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!fossil) {
-      return res.status(404).json({ error: "Fossil not found" });
+// Handle Fossil creation on POST (for JSON API)
+exports.fossil_create_post = async function(req, res) {
+    // Check if the request body contains the required fields
+    const { name, age, location } = req.body;
+    if (!name || !age || !location) {
+      return res.status(400).json({ error: "All fields (name, age, location) are required" });
     }
-    res.json(fossil);  // Send the updated fossil as JSON
-  } catch (err) {
-    res.status(500).json({ error: "Error updating fossil: " + err.message });
-  }
-};
+  
+    try {
+      const fossil = new Fossil({ name, age, location });  // Create a new fossil using the request body
+      await fossil.save();
+      res.status(201).json(fossil);  // Send the created fossil back
+    } catch (err) {
+      res.status(500).json({ error: `Error creating fossil: ${err.message}` });
+    }
+  };
+  
