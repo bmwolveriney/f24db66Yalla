@@ -22,7 +22,18 @@ exports.fossil_detail = async function(req, res) {
   }
 };
 
+// Handle creation of a new fossil
 exports.fossil_create_post = async function(req, res) {
+    try {
+      const newFossil = new Fossil(req.body);  // Body should contain name, age, location
+      await newFossil.save();
+      res.status(201).json(newFossil);  // Return the new fossil as JSON
+    } catch (err) {
+      console.error(err);
+      res.status(400).send("Error creating fossil.");
+    }
+  };
+  exports.fossil_create_post = async function(req, res) {
     try {
       const newFossil = new Fossil(req.body);  // Create a new instance from the request body
       await newFossil.save();  // Save the fossil to the database
@@ -32,4 +43,4 @@ exports.fossil_create_post = async function(req, res) {
       res.status(500).send("Error creating fossil. " + err.message);  // Send a more detailed error response
     }
   };
-  
+    
