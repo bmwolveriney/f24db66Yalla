@@ -52,7 +52,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // Use the resource router
-app.use('/resource', resourceRouter);  // All API routes are prefixed with '/resource'
 
 // Set up logging and other middleware
 app.use(logger('dev'));
@@ -61,6 +60,7 @@ app.use('/resource/fossils', fossilRoutes);
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/resource/fossils', require('./routes/fossils'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
