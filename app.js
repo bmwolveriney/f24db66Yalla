@@ -62,10 +62,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/resource/fossils', require('./routes/fossils'));
 
-// catch 404 and forward to error handler
+// Catch-all route for 404 errors
 app.use((req, res) => {
-  res.status(404).render('404', { message: 'Not Found' });
+  res.status(404).send('Page not found');
 });
+
 
 // error handler
 app.use(function(err, req, res, next) {
