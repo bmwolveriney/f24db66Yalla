@@ -1,76 +1,43 @@
 const Fossil = require('../models/fossils');
 
-// List of all Fossils
+// List all fossils and render them in the 'fossils' view
 exports.fossil_list = async function(req, res) {
   try {
-    const fossils = await Fossil.find();  // Find all fossils in the database
-    res.json(fossils);  // Send the fossils as JSON
+    const fossils = await Fossil.find();
+    res.render('fossils', { fossils: fossils });  // Render fossils.pug with the list
   } catch (err) {
-    res.status(500).json({ error: "Error fetching fossils: " + err.message });
+    console.error("Error in fossil_list:", err);
+    res.status(500).send("Error retrieving fossils.");
   }
 };
 
-// Get details of a specific Fossil
+// View details of a single fossil and render in the 'fossil_detail' view
 exports.fossil_detail = async function(req, res) {
   try {
     const fossil = await Fossil.findById(req.params.id);
     if (!fossil) {
-      return res.status(404).json({ error: "Fossil not found" });
+      return res.status(404).send("Fossil not found.");
     }
-    res.json(fossil);  // Send the fossil details as JSON
+    res.render('fossil_detail', { fossil: fossil });  // Render fossil_detail.pug with fossil details
   } catch (err) {
-    res.status(500).json({ error: "Error retrieving fossil: " + err.message });
+    console.error("Error in fossil_detail:", err);
+    res.status(500).send("Error retrieving fossil details.");
   }
 };
 
-// Handle Fossil creation on POST
+// Handle the creation of a new fossil and return as JSON
 exports.fossil_create_post = async function(req, res) {
   try {
-    const fossil = new Fossil({
-      name: req.body.name,
-      age: req.body.age,
-      location: req.body.location
-    });
-
-    // Validate required fields
-    if (!fossil.name || !fossil.age || !fossil.location) {
-      return res.status(400).json({ error: "All fields (name, age, location) are required" });
-    }
-
-    await fossil.save();
-    res.status(201).json(fossil);  // Send the created fossil back
-  } catch (err) {
-    res.status(500).json({ error: "Error creating fossil: " + err.message });
-  }
-};
-
-// Handle Fossil deletion on DELETE
-exports.fossil_delete = async function(req, res) {
-  try {
-    const fossil = await Fossil.findByIdAndDelete(req.params.id);
-    if (!fossil) {
-      return res.status(404).json({ error: "Fossil not found" });
-    }
-    res.status(200).json({ message: "Fossil deleted" });
-  } catch (err) {
-    res.status(500).json({ error: "Error deleting fossil: " + err.message });
-  }
-};
-
-// Handle Fossil creation on POST (for JSON API)
-exports.fossil_create_post = async function(req, res) {
-    // Check if the request body contains the required fields
     const { name, age, location } = req.body;
     if (!name || !age || !location) {
-      return res.status(400).json({ error: "All fields (name, age, location) are required" });
+      return res.status(400).send("All fields (name, age, location) are required.");
     }
-  
-    try {
-      const fossil = new Fossil({ name, age, location });  // Create a new fossil using the request body
-      await fossil.save();
-      res.status(201).json(fossil);  // Send the created fossil back
-    } catch (err) {
-      res.status(500).json({ error: `Error creating fossil: ${err.message}` });
-    }
-  };
-  
+    
+    const newFossil = new Fossil({ name, age, location });  // Create a new instance from the request body
+    await newFossil.save();  // Save the fossil to the database
+    res.status(201).json(newFossil);  // Respond with the newly created fossil as JSON
+  } catch (err) {
+    console.error("Error in fossil_create_post:", err);  // Log the error details
+    res.status(500).send("Error creating fossil: " + err.message);  // Send a detailed error response
+  }
+};
