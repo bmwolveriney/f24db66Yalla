@@ -75,5 +75,27 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+// Handle the creation of a new fossil and return as JSON
+exports.fossil_create_post = async function(req, res) {
+  console.log("Received Request Body:", req.body);  // Log the request body to see what is being sent
 
+  const { name, age, location } = req.body || {};
+
+  // Check if all required fields are provided
+  if (!name || !age || !location) {
+    return res.status(400).json({
+      error: "All fields (name, age, location) are required.",
+      receivedData: req.body  // Include what was actually received in the response
+    });
+  }
+
+  try {
+    const newFossil = new Fossil({ name, age, location });
+    await newFossil.save();
+    res.status(201).json(newFossil);
+  } catch (err) {
+    console.error("Error in fossil_create_post:", err);
+    res.status(500).send("Error creating fossil: " + err.message);
+  }
+};
 module.exports = app;
