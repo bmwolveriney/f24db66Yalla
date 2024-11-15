@@ -27,15 +27,19 @@ exports.fossil_detail = async function(req, res) {
 
 // Handle the creation of a new fossil and return as JSON
 exports.fossil_create_post = async function(req, res) {
-    console.log("Request Body:", req.body);  // Log req.body to confirm it's being received
+    console.log("Request Body:", req.body);  // Log req.body to confirm what data is being received
+  
+    const { name, age, location } = req.body || {};  // Destructure req.body and default to empty object if undefined
+  
+    // Check if all required fields are provided
+    if (!name || !age || !location) {
+      return res.status(400).json({
+        error: "All fields (name, age, location) are required.",
+        receivedData: req.body  // Send back what was received for troubleshooting
+      });
+    }
   
     try {
-      const { name, age, location } = req.body || {}; // Fallback to empty object if req.body is undefined
-  
-      if (!name || !age || !location) {
-        return res.status(400).send("All fields (name, age, location) are required.");
-      }
-  
       const newFossil = new Fossil({ name, age, location });
       await newFossil.save();
       res.status(201).json(newFossil);
@@ -44,4 +48,5 @@ exports.fossil_create_post = async function(req, res) {
       res.status(500).send("Error creating fossil: " + err.message);
     }
   };
+  
   
