@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1= title
+  - let fossilId = toShow._id
+  - let fossilName = toShow.name
+  - let fossilAge = toShow.age
+  - let fossilLocation = toShow.location
+
+  div.row
+    div(class='fossilAttr mr-3') Fossil ID is:
+    div #{fossilId}
+  div.row
+    div(class='fossilAttr mr-3') Fossil Name is:
+    div #{fossilName}
+  div.row
+    div(class='fossilAttr mr-3') Age is:
+    div #{fossilAge}
+  div.row
+    div(class='fossilAttr mr-3') Location is:
+    div #{fossilLocation}

@@ -1,52 +1,61 @@
-const Fossil = require('../models/fossils');
+const Fossil = require('../models/fossil');
 
-// List all fossils and render them in the 'fossils' view
-exports.fossil_list = async function(req, res) {
-  try {
-    const fossils = await Fossil.find();
-    res.render('fossils', { fossils: fossils });  // Render fossils.pug with the list
-  } catch (err) {
-    console.error("Error in fossil_list:", err);
-    res.status(500).send("Error retrieving fossils.");
-  }
+// List all fossils
+exports.fossil_list = function(req, res) {
+  Fossil.find({}, function(err, fossils) {
+    if (err) {
+      return next(err);
+    }
+    res.render('fossils', { title: 'Fossil List', results: fossils });
+  });
 };
 
-// View details of a single fossil and render in the 'fossil_detail' view
-exports.fossil_detail = async function(req, res) {
-  try {
-    const fossil = await Fossil.findById(req.params.id);
-    if (!fossil) {
-      return res.status(404).send("Fossil not found.");
+// Create a new fossil
+exports.fossil_create_post = function(req, res) {
+  let fossil = new Fossil({
+    name: req.body.name,
+    age: req.body.age,
+    location: req.body.location
+  });
+
+  fossil.save(function(err) {
+    if (err) {
+      return next(err);
     }
-    res.render('fossil_detail', { fossil: fossil });  // Render fossil_detail.pug with fossil details
-  } catch (err) {
-    console.error("Error in fossil_detail:", err);
-    res.status(500).send("Error retrieving fossil details.");
-  }
+    res.json(fossil);
+  });
 };
 
-// Handle the creation of a new fossil and return as JSON
-exports.fossil_create_post = async function(req, res) {
-    console.log("Request Body:", req.body);  // Log req.body to confirm what data is being received
-  
-    const { name, age, location } = req.body || {};  // Destructure req.body and default to empty object if undefined
-  
-    // Check if all required fields are provided
-    if (!name || !age || !location) {
-      return res.status(400).json({
-        error: "All fields (name, age, location) are required.",
-        receivedData: req.body  // Send back what was received for troubleshooting
-      });
+// Detail page for a specific fossil
+exports.fossil_detail = function(req, res) {
+  Fossil.findById(req.params.id, function(err, fossil) {
+    if (err) {
+      return next(err);
     }
-  
-    try {
-      const newFossil = new Fossil({ name, age, location });
-      await newFossil.save();
-      res.status(201).json(newFossil);
-    } catch (err) {
-      console.error("Error in fossil_create_post:", err);
-      res.status(500).send("Error creating fossil: " + err.message);
+    res.render('fossil_detail', { title: 'Fossil Detail', toShow: fossil });
+  });
+};
+
+// Update a fossil
+exports.fossil_update_put = function(req, res) {
+  Fossil.findByIdAndUpdate(req.params.id, {
+    name: req.body.name,
+    age: req.body.age,
+    location: req.body.location
+  }, { new: true }, function(err, updatedFossil) {
+    if (err) {
+      return next(err);
     }
-  };
-  
-  
+    res.json(updatedFossil);
+  });
+};
+
+// Delete a fossil
+exports.fossil_delete = function(req, res) {
+  Fossil.findByIdAndRemove(req.params.id, function(err) {
+    if (err) {
+      return next(err);
+    }
+    res.json({ message: 'Fossil deleted successfully' });
+  });
+};

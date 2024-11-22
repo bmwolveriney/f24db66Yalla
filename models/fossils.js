@@ -1,13 +1,12 @@
 const mongoose = require('mongoose');
 
-// Define the schema for fossils
-const fossilSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const fossilSchema = new Schema({
   name: { type: String, required: true },
-  age: { type: String, required: true },
+  age: { type: Number, required: true },
   location: { type: String, required: true }
 });
 
-// Create a model from the schema
-const Fossil = mongoose.model('Fossil', fossilSchema);
-
-module.exports = Fossil;
+// Export the model
+module.exports = mongoose.model('Fossil', fossilSchema);

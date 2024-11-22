@@ -1,10 +1,8 @@
-doctype html
-html
-  head
-    title Fossils List
-  body
-    h1 Fossils List
-    ul
-      each fossil in fossils
-        li
-          a(href=`/resource/fossils/${fossil._id}`) #{fossil.name}
+extends layout
+
+block content
+  h1= title
+  each fossil in results
+    h3 Name: #{fossil.name}
+    li Age: #{fossil.age}
+    li Location: #{fossil.location}

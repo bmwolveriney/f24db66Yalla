@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  h1= title
+  - let fossilid = toShow._id
+  - let fossilName = toShow.name
+  - let age = toShow.age
+  - let location = toShow.location
+
+  div.row(class='mb-2')
+    div.mr-1 ID is:
+    div #{fossilid}
+
+  form(id='FossilForm', action="/fossils/" + fossilid, method="PUT")
+    div.form-group
+      label(for='name') Fossil Name
+      input#name(type='text', name='name', value=fossilName)
+
+    div.form-group
+      label(for='age') Age
+      input#age(type='number', name='age', value=age)
+
+    div.form-group
+      label(for='location') Location
+      input#location(type='text', name='location', value=location)
+
+    input(type="submit")
+
+  script.
+    document.forms['FossilForm'].addEventListener('submit', (event) => {
+      event.preventDefault();
+      fetch(event.target.action, {
+        method: 'PUT',
+        body: new URLSearchParams(new FormData(event.target)) // form data
+      }).then((resp) => {
+        return resp.json();
+      }).then((body) => {
+        alert("Update succeeded");
+      }).catch((error) => {
+        alert("Update failed " + error);
+      });
+    });

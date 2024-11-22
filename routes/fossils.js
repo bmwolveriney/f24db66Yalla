@@ -1,20 +1,22 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-// Import the Fossil model to interact with MongoDB
-const Fossil = require('../models/fossils');
+// Require controller modules
+const fossilController = require('../controllers/fossil');
 
-/* GET fossils page. */
-router.get('/', async function(req, res, next) {
-  try {
-    // Fetch all fossils from the database
-    const fossils = await Fossil.find(); // Query the database to get all fossils
+// List all fossils
+router.get('/', fossilController.fossil_list);
 
-    // Render the 'fossils' view and pass the fossil data to it
-    res.render('fossils', { title: 'Search Results - Fossils', fossils });
-  } catch (err) {
-    next(err); // Pass any errors to the error handler
-  }
-});
+// Create a new fossil
+router.post('/', fossilController.fossil_create_post);
+
+// Detail page for a specific fossil
+router.get('/:id', fossilController.fossil_detail);
+
+// Update a fossil
+router.put('/:id', fossilController.fossil_update_put);
+
+// Delete a fossil
+router.delete('/:id', fossilController.fossil_delete);
 
 module.exports = router;
