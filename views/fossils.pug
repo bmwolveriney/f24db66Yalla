@@ -2,7 +2,35 @@ extends layout
 
 block content
   h1= title
+  // Add a "Create New Fossil" button at the top
+  a.btn.btn-success.mb-3(href='/resource/fossils/create') Create New Fossil
+  // Loop through the fossils in the collection
   each fossil in results
-    h3 Name: #{fossil.name}
-    li Age: #{fossil.age}
-    li Location: #{fossil.location}
+    div(class="card my-3 p-3 border")
+      h3 Name: #{fossil.fossil_name}
+      ul
+        li Location: #{fossil.location}
+        li Discovered Year: #{fossil.discovered_year}
+
+      // Button to navigate to the update page
+      button.btn.btn-primary.mt-2(onclick=`navigateToUpdate('${fossil._id}')`) Update
+
+      // Button to navigate to the detail view
+      button.btn.btn-info.mt-2(onclick=`navigateToDetails('${fossil._id}')`) View Details
+
+      // Button to navigate to the delete view
+      button.btn.btn-danger.mt-2(onclick=`navigateToDelete('${fossil._id}')`) Delete
+
+  // Add a script to handle the navigation
+  script.
+    function navigateToUpdate(fossilId) {
+      window.location.href = `/resource/update?id=${fossilId}`;;
+    }
+
+    function navigateToDetails(fossilId) {
+      window.location.href = `/resource/fossils/detail?id=${fossilId}`;
+    }
+
+    function navigateToDelete(fossilId) {
+      window.location.href = `/fossils/delete?id=${fossilId}`;
+    }

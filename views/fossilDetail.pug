@@ -1,21 +1,33 @@
 extends layout
 
 block content
-  h1= title
-  - let fossilId = toShow._id
-  - let fossilName = toShow.name
-  - let fossilAge = toShow.age
-  - let fossilLocation = toShow.location
+  h1.text-center.text-dark.mt-5.font-weight-bold= title
 
-  div.row
-    div(class='fossilAttr mr-3') Fossil ID is:
-    div #{fossilId}
-  div.row
-    div(class='fossilAttr mr-3') Fossil Name is:
-    div #{fossilName}
-  div.row
-    div(class='fossilAttr mr-3') Age is:
-    div #{fossilAge}
-  div.row
-    div(class='fossilAttr mr-3') Location is:
-    div #{fossilLocation}
+  if (toShow == null)
+    h2.text-center.text-muted.mt-3 No details available for this fossil
+  else
+    - let fossilId = toShow._id
+    - let fossilName = toShow.fossil_name
+    - let fossilLocation = toShow.location
+    - let discoveredYear = toShow.discovered_year
+
+    div.container.mt-5
+      div.card.shadow-lg.border-success
+        div.card-header.bg-success.text-white
+          h3.text-center Fossil Details
+        div.card-body
+          div.row
+            div.col-md-6.mb-3
+              strong Fossil ID:
+              p.text-muted #{fossilId}
+            div.col-md-6.mb-3
+              strong Fossil Name:
+              p.text-muted #{fossilName}
+            div.col-md-6.mb-3
+              strong Location:
+              p.text-muted #{fossilLocation}
+            div.col-md-6.mb-3
+              strong Discovered Year:
+              p.text-muted #{discoveredYear}
+        div.card-footer.text-center
+          a.btn.btn-outline-success.btn-lg(href='/fossils') Back to List

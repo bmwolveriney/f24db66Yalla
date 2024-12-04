@@ -3,38 +3,36 @@ extends layout
 block content
   h1= title
   if (toShow == null)
-    h2 No fossil to delete
+    h2 No instance to delete
   else
     - let fossilid = toShow._id
-    - let fossilName = toShow.name
-    - let fossilAge = toShow.age
-    - let fossilLocation = toShow.location
-    - let actionid = "/fossils/" + fossilid
-
+    - let fossil_name = toShow.fossil_name
+    - let location = toShow.location
+    - let discovered_year = toShow.discovered_year
+    - let actionid = "/resource/fossils/" + fossilid
     script let actionid = "#{actionid}"
-    div.row
-      div(class='fossilAttr mr-3') Fossil ID is:
-      div #{fossilid}
-    div.row
-      div(class='fossilAttr mr-3') Fossil Name is:
-      div #{fossilName}
-    div.row
-      div(class='fossilAttr mr-3') Age is:
-      div #{fossilAge}
-    div.row
-      div(class='fossilAttr mr-3') Location is:
-      div #{fossilLocation}
-      
+    div
+      div.row
+        div(class='fossilAttr mr-3') Fossil ID is:
+        div #{fossilid}
+      div.row
+        div(class='fossilAttr mr-3') Fossil Name is:
+        div #{fossil_name}
+      div.row
+        div(class='fossilAttr mr-3') Location is:
+        div #{location}
+      div.row
+        div(class='fossilAttr mr-3') Discovered Year is:
+        div #{discovered_year}
     button(class="btn btn-danger m-2" onclick="deleteOnid()") Delete
     button(class="btn btn-secondary m-2" onclick="cancel()") Cancel
-
   script.
-    function cancel() {
-      window.location.href = '/fossils';
-    }
-
+      function cancel() {
+        window.location.href = '/fossils';
+      }
   script.
     function deleteOnid() {
+      console.log("Starting delete");
       fetch(actionid, {
         method: 'DELETE'
       }).then((resp) => {

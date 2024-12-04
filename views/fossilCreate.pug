@@ -2,24 +2,25 @@ extends layout
 
 block content
   h1= title
-  form(id='FossilForm', action="/fossils", method="POST")
+  form(id='FossilForm', action="/resource/fossils", method="POST")
     div.form-group
-      label(for='name') Name
-      input#name(type='text', name='name', required=true)
+      label.siteAttr(for='fossil_name') Fossil Name
+      input#fossil_name(type='text', name='fossil_name', required=true)
     div.form-group
-      label(for='age') Age
-      input#age(type='number', name='age', required=true)
-    div.form-group
-      label(for='location') Location
+      label.siteAttr(for='location') Location
       input#location(type='text', name='location', required=true)
+    div.form-group
+      label.siteAttr(for='discovered_year') Discovered Year
+      input#discovered_year(type='number', name='discovered_year', required=true)
     input(type="submit", value="Create")
   
   script.
     document.forms['FossilForm'].addEventListener('submit', (event) => {
       event.preventDefault();
+      // Show user that form is being submitted
       fetch(event.target.action, {
         method: 'POST',
-        body: new URLSearchParams(new FormData(event.target)) // form data
+        body: new URLSearchParams(new FormData(event.target)) // event.target is the form
       })
       .then((resp) => resp.json())
       .then((body) => {

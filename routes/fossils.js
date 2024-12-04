@@ -1,22 +1,20 @@
 const express = require('express');
 const router = express.Router();
-
-// Require controller modules
 const fossilController = require('../controllers/fossil');
+const secured = (req, res, next) => {
+    if (req.user) {
+        return next();
+    }
+    res.redirect("/login");
+};
 
-// List all fossils
-router.get('/', fossilController.fossil_list);
+// Route to view all fossils in a web page
+router.get('/', fossilController.fossil_view_all_Page);
 
-// Create a new fossil
-router.post('/', fossilController.fossil_create_post);
+router.get('/create', (req, res) => res.render('fossil_create_form'));
 
-// Detail page for a specific fossil
-router.get('/:id', fossilController.fossil_detail);
+/* GET delete fossil page */
+router.get('/fossils/delete', secured, fossilController.fossil_delete_Page);
 
-// Update a fossil
-router.put('/:id', fossilController.fossil_update_put);
-
-// Delete a fossil
-router.delete('/:id', fossilController.fossil_delete);
-
+// Export the router
 module.exports = router;
